@@ -4,7 +4,12 @@
 
 int main()
 {
-    bcm2835_i2c_begin();
+    if (not bcm2835_init())
+    {
+        std::cout << "ERROR: failed to initialise GPIO driver" << std::endl;
+        return 1;
+    }
+
     std::cout << "hello world!" << std::endl;
     return 0;
 }
