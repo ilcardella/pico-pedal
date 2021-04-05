@@ -5,7 +5,7 @@ endif
 
 DOCKER_IMAGE = guitar-fx-builder
 DOCKER_USER = -u $(shell id -u):$(shell id -g)
-DOCKER_BUILD = docker build --rm -f docker/Dockerfile --target builder -t $(DOCKER_IMAGE) --no-cache .
+DOCKER_BUILD = docker build --rm -f docker/Dockerfile --target builder -t $(DOCKER_IMAGE) .
 DOCKER_RUN = docker run --rm -t -v ${PWD}:/build -w /build $(DOCKER_USER) $(DOCKER_IMAGE):latest
 
 default: build
@@ -17,8 +17,7 @@ build:
 > $(DOCKER_RUN) make local-build
 
 local-build: clean
-> mkdir -p build
-> cd build && cmake .. && cmake --build . --config Release -- -j $(nproc)
+> scripts/build.sh
 
 clean:
 > rm -rf build
