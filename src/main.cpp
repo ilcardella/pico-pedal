@@ -10,6 +10,8 @@ int main()
         return 1;
     }
 
+    // TODO write effect
+
     std::cout << "hello world!" << std::endl;
     return 0;
 }

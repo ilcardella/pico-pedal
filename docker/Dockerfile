@@ -21,5 +21,5 @@ ARG BCM2835_INSTALL_PATH=/usr/local
 RUN curl -L ${BCM2835_URL} | tar -xz -C /opt \
     && cd /opt/bcm2835-${BCM2835_VERSION} \
     && ./configure -host=arm -prefix=${BCM2835_INSTALL_PATH} CC=${GCC_TOOLCHAIN} \
-&& make \
-&& make install
+    && make \
+    && make install
