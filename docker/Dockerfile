@@ -1,25 +1,25 @@
 FROM ubuntu:latest AS builder
 
-ENV DEBIAN_FRONTEND noninteractive
+ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update \
-    && apt-get install -y \
-    curl \
+    && apt-get install --no-install-recommends -y cmake \
     build-essential \
-    cmake \
+    git \
+    apt-transport-https \
+    ca-certificates \
     python3 \
+    gcc-arm-none-eabi \
+    libnewlib-arm-none-eabi \
+    libstdc++-arm-none-eabi-newlib \
     && rm -rf /var/lib/apt/lists/*
 
-# Install the RPi Zero toolchain
-ARG TOOLCHAIN_URL=https://sourceforge.net/projects/raspberry-pi-cross-compilers/files/Raspberry%20Pi%20GCC%20Cross-Compiler%20Toolchains/Buster/GCC%209.3.0/Raspberry%20Pi%201%2C%20Zero/cross-gcc-9.3.0-pi_0-1.tar.gz/download
-RUN curl -L ${TOOLCHAIN_URL} | tar -xz -C /opt
+# Keep PICO_SDK_PATH persistent in the image
+ENV PICO_SDK_PATH=/opt/pico-sdk
+ARG PICO_SDK_VERSION=1.1.2
+RUN git clone --depth 1 --branch ${PICO_SDK_VERSION} \
+    https://github.com/raspberrypi/pico-sdk \
+    ${PICO_SDK_PATH} \
+    && git -C ${PICO_SDK_PATH} submodule update --init
 
-# Install BCM2835 library
-ARG GCC_TOOLCHAIN=/opt/cross-pi-gcc-9.3.0-0/bin/arm-linux-gnueabihf-gcc
-ARG BCM2835_VERSION=1.69
-ARG BCM2835_URL=http://www.airspayce.com/mikem/bcm2835/bcm2835-${BCM2835_VERSION}.tar.gz
-ARG BCM2835_INSTALL_PATH=/usr/local
-RUN curl -L ${BCM2835_URL} | tar -xz -C /opt \
-    && cd /opt/bcm2835-${BCM2835_VERSION} \
-    && ./configure -host=arm -prefix=${BCM2835_INSTALL_PATH} CC=${GCC_TOOLCHAIN} \
-    && make \
-    && make install
+COPY ./extern /opt/guitar_fx_lib
+RUN make -C /opt/guitar_fx_lib install

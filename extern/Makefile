@@ -3,25 +3,25 @@ ifeq ($(origin .RECIPEPREFIX), undefined)
 endif
 .RECIPEPREFIX = >
 
-DOCKER_IMAGE = pico-pedal-builder
+DOCKER_IMAGE = guitar_fx_lib_builder
 DOCKER_USER = -u $(shell id -u):$(shell id -g)
 DOCKER_BUILD = docker build --rm -f docker/Dockerfile --target builder -t $(DOCKER_IMAGE) .
 DOCKER_RUN = docker run --rm -t -v ${PWD}:/build -w /build $(DOCKER_USER) $(DOCKER_IMAGE):latest
 
-default: build
+default: ci
 
 docker:
 > $(DOCKER_BUILD)
 
-build:
-> $(DOCKER_RUN) make local-build
+test:
+> $(DOCKER_RUN) scripts/test-project.sh
 
-local-build: clean
-> scripts/build.sh
+ci: docker test
 
 clean:
 > rm -rf build
 
-ci: docker build
+install: clean
+> scripts/install.sh
 
-.PHONY: default docker build local-build clean ci
+.PHONY: default ci test docker clean install
