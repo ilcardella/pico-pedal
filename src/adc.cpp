@@ -5,7 +5,7 @@
 static inline void cs_select(const uint &cs)
 {
     asm volatile("nop \n nop \n nop");
-    gpio_put(cs, 0); // Active low
+    gpio_put(cs, 0);
     asm volatile("nop \n nop \n nop");
 }
 
@@ -19,7 +19,7 @@ static inline void cs_deselect(const uint &cs)
 Adc::Adc(const uint &clk, const uint &cs, const uint &miso, const uint &mosi)
     : clk_pin(clk), cs_pin(cs), miso_pin(miso), mosi_pin(mosi)
 {
-    spi_init(spi0, 500000);
+    spi_init(spi0, 4 * 1000 * 1000); // 4Mhz
     gpio_set_function(clk_pin, GPIO_FUNC_SPI);
     gpio_set_function(miso_pin, GPIO_FUNC_SPI);
     gpio_set_function(mosi_pin, GPIO_FUNC_SPI);

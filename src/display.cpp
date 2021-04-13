@@ -6,7 +6,7 @@
 
 Display::Display(const uint &sda, const uint &scl)
 {
-    i2c_init(i2c0, 400000);
+    i2c_init(i2c0, 400 * 1000); // 400KHz
     gpio_set_function(sda, GPIO_FUNC_I2C);
     gpio_set_function(scl, GPIO_FUNC_I2C);
     gpio_pull_up(sda);
@@ -33,6 +33,7 @@ void Display::show()
     if (now - previous_update_time >= REFRESH_PERIOD and (not is_logo_time(now)))
     {
         oled->clear();
+        // TODO Make it pretty
         oled->drawString(1, 1, fx_name);
         oled->drawString(1, 50, message);
         oled->display();

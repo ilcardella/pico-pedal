@@ -1,5 +1,6 @@
 #pragma once
 
+#include <hardware/pwm.h>
 #include <pico/stdlib.h>
 
 class AudioPwm
@@ -13,4 +14,5 @@ class AudioPwm
   private:
     uint pwm1;
     uint pwm2;
+    pwm_config config;
 };

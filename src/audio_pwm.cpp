@@ -1,15 +1,14 @@
 #include "audio_pwm.h"
 
-#include "hardware/pwm.h"
-
 AudioPwm::AudioPwm(const uint &pwm1, const uint &pwm2) : pwm1(pwm1), pwm2(pwm2)
 {
     gpio_set_function(pwm1, GPIO_FUNC_PWM);
     gpio_set_function(pwm2, GPIO_FUNC_PWM);
 
-    // Configure the PWM with the minimum divider (clk_sys / 2)
-    pwm_config config = pwm_get_default_config();
-    pwm_config_set_clkdiv_int(&config, 2);
+    // Configure the PWM
+    config = pwm_get_default_config();
+    // TODO: This might not be necessary and we could use a smaller divider like 2
+    pwm_config_set_clkdiv_int(&config, 14); // 133Mhz / 14 = 9.6Mhz
     // Both channels use 6 bits
     pwm_config_set_wrap(&config, 64);
 

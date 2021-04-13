@@ -10,6 +10,9 @@ PicoPedal::PicoPedal()
 
 void PicoPedal::spin()
 {
+    std::string fx_name = "Off";
+    std::string message = "";
+
     // Cycle effects upon button press
     if (button_back.is_pressed_and_released())
     {
@@ -35,6 +38,8 @@ void PicoPedal::spin()
     // If the footswitch is off skip the audio processing
     if (foot_switch.is_on())
     {
+        fx_name = fx.get_effect_name();
+
         led.on();
 
         // Read audio input from the ADC
@@ -42,28 +47,25 @@ void PicoPedal::spin()
         uint32_t audio_output = audio_input;
 
         // Process audio through the active effect
-        auto success = fx.process(audio_input, audio_output);
-
-        // Send audio output out
-        if (success)
+        if (fx.process(audio_input, audio_output))
         {
+            // Send audio output out
             pwm.send(audio_output);
         }
         else
         {
             // If the effect fails, pass through the input audio and show a message
             pwm.send(audio_input);
-            display.set_message("Error processing audio");
+            message = "Error processing audio";
         }
-
-        display.set_fx_name(fx.get_effect_name());
     }
     else
     {
         led.off();
-        display.set_fx_name("Off");
     }
 
     // Update display
+    display.set_message(message);
+    display.set_fx_name(fx_name);
     display.show();
 }
