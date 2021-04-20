@@ -1,7 +1,5 @@
 #include "adc.h"
 
-#include "hardware/spi.h"
-
 static inline void cs_select(const uint &cs)
 {
     asm volatile("nop \n nop \n nop");
@@ -16,10 +14,11 @@ static inline void cs_deselect(const uint &cs)
     asm volatile("nop \n nop \n nop");
 }
 
-Adc::Adc(const uint &clk, const uint &cs, const uint &miso, const uint &mosi)
-    : clk_pin(clk), cs_pin(cs), miso_pin(miso), mosi_pin(mosi)
+Adc::Adc(const uint &clk, const uint &cs, const uint &miso, const uint &mosi,
+         spi_inst_t *bus)
+    : clk_pin(clk), cs_pin(cs), miso_pin(miso), mosi_pin(mosi), spi_bus(bus)
 {
-    spi_init(spi0, 4 * 1000 * 1000); // 4Mhz
+    spi_init(spi_bus, SPI_FREQ);
     gpio_set_function(clk_pin, GPIO_FUNC_SPI);
     gpio_set_function(miso_pin, GPIO_FUNC_SPI);
     gpio_set_function(mosi_pin, GPIO_FUNC_SPI);
@@ -39,7 +38,7 @@ uint32_t Adc::read()
     cs_select(cs_pin);
 
     // Read 3 bytes from the ADC
-    spi_write_read_blocking(spi0, CHANNEL_0_REQ.data(), miso_buffer.data(), 3);
+    spi_write_read_blocking(spi_bus, CHANNEL_0_REQ.data(), miso_buffer.data(), 3);
 
     // Set CS pin HIGH to notify comms are ending
     cs_deselect(cs_pin);

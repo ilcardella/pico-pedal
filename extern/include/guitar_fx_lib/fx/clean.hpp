@@ -5,7 +5,10 @@
 class Clean : public Effect
 {
   public:
-    Clean() = default;
+    Clean(const uint32_t &min, const uint32_t &max)
+    {
+        set_signal_limits(min, max);
+    }
     ~Clean() = default;
 
     bool process(const uint32_t &input, uint32_t &output) override

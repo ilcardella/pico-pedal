@@ -1,16 +1,17 @@
 #include "pico_pedal.h"
 
 PicoPedal::PicoPedal()
-    : fx(), adc(PICO_DEFAULT_SPI_SCK_PIN, PICO_DEFAULT_SPI_CSN_PIN,
-                PICO_DEFAULT_SPI_RX_PIN, PICO_DEFAULT_SPI_TX_PIN),
-      pwm(22, 21), button_back(10), button_next(11), display(2, 3), led(6),
-      gain_pot(26, 0), toggle(7), foot_switch(8)
+    : fx(Adc::ADC_MIN, Adc::ADC_MAX),
+      adc(ADC_SPI_SCK_PIN, ADC_SPI_CS_PIN, ADC_SPI_MISO_PIN, ADC_SPI_MOSI_PIN, spi0),
+      pwm(PWM_OUT_1_PIN, PWM_OUT_2_PIN), button_back(BUTTON_BACK_PIN),
+      button_next(BUTTON_NEXT_PIN), display(DISPLAY_I2C_SDA, DISPLAY_I2C_SCL, I2C_BUS),
+      led(LED_PIN), gain_pot(POTENTIOMETER_PIN, POTENTIOMETER_CH), toggle(TOGGLE_PIN),
+      foot_switch(FOOT_SWITCH_PIN)
 {
 }
 
 void PicoPedal::spin()
 {
-    std::string fx_name = "Off";
     std::string message = "";
 
     // Cycle effects upon button press
@@ -33,18 +34,16 @@ void PicoPedal::spin()
     }
 
     // Update effect gain based on input potentiometer value
-    fx.set_gain_percentage(gain_pot.get_percent_value());
+    fx.set_gain(gain_pot.get_percent_value());
 
-    // If the footswitch is off skip the audio processing
+    // Perform audio processing only when the footswitch is on
     if (foot_switch.is_on())
     {
-        fx_name = fx.get_effect_name();
-
         led.on();
 
         // Read audio input from the ADC
-        uint32_t audio_input = adc.read();
-        uint32_t audio_output = audio_input;
+        uint32_t audio_input(adc.read());
+        uint32_t audio_output(0);
 
         // Process audio through the active effect
         if (fx.process(audio_input, audio_output))
@@ -66,6 +65,6 @@ void PicoPedal::spin()
 
     // Update display
     display.set_message(message);
-    display.set_fx_name(fx_name);
+    display.set_fx_name(fx.get_effect_name());
     display.show();
 }

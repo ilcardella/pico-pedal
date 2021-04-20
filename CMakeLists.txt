@@ -19,9 +19,9 @@ target_sources(${PROJECT_NAME} PRIVATE src/pico_pedal_main.cpp
                                         src/audio_pwm.cpp
                                         src/button.cpp
                                         src/display.cpp
-                                        src/pico_pedal.cpp
                                         src/potentiometer.cpp
                                         src/led.cpp
+                                        src/pico_pedal.cpp
                                         src/switch.cpp
                                         src/ssd1306/GFX.cpp
                                         src/ssd1306/SSD1306.cpp

@@ -1,18 +1,16 @@
 #include "display.h"
 
-#include <hardware/i2c.h>
-
 #include "ssd1306/logo.hpp"
 
-Display::Display(const uint &sda, const uint &scl)
+Display::Display(const uint &sda, const uint &scl, i2c_inst_t *bus) : i2c_bus(bus)
 {
-    i2c_init(i2c0, 400 * 1000); // 400KHz
+    i2c_init(i2c_bus, I2C_FREQ);
     gpio_set_function(sda, GPIO_FUNC_I2C);
     gpio_set_function(scl, GPIO_FUNC_I2C);
     gpio_pull_up(sda);
     gpio_pull_up(scl);
 
-    oled = std::make_unique<GFX>(0x3C, 128, 64, i2c0);
+    oled = std::make_unique<GFX>(0x3C, 128, 64, i2c_bus);
     oled->display(logo);
     start_time = to_ms_since_boot(get_absolute_time());
 }

@@ -13,5 +13,5 @@ float Potentiometer::get_percent_value()
 {
     uint16_t result = adc_read();
 
-    return static_cast<float>(result * 100 / 4096);
+    return static_cast<float>(result / 4096);
 }
