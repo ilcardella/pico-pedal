@@ -21,7 +21,6 @@ target_sources(${PROJECT_NAME} PRIVATE src/pico_pedal_main.cpp
                                         src/display.cpp
                                         src/potentiometer.cpp
                                         src/led.cpp
-                                        src/pico_pedal.cpp
                                         src/switch.cpp
                                         src/ssd1306/GFX.cpp
                                         src/ssd1306/SSD1306.cpp
@@ -30,6 +29,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE include)
 
 target_link_libraries(${PROJECT_NAME}
                         pico_stdlib
+                        pico_multicore
                         hardware_adc
                         hardware_i2c
                         hardware_pwm

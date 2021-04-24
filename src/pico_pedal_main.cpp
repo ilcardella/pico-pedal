@@ -1,14 +1,145 @@
-#include "pico_pedal.h"
+
+#include "adc.h"
+#include "audio_pwm.h"
+#include "button.h"
+#include "display.h"
+#include "led.h"
+#include "potentiometer.h"
+#include "switch.h"
+
+#include <guitar_fx_lib/fx_manager.hpp>
+
+#include <hardware/i2c.h>
+#include <hardware/spi.h>
+#include <pico/multicore.h>
+#include <pico/stdlib.h>
+
+constexpr uint PWM_OUT_1_PIN = 22;
+constexpr uint PWM_OUT_2_PIN = 21;
+constexpr uint BUTTON_BACK_PIN = 10;
+constexpr uint BUTTON_NEXT_PIN = 11;
+constexpr uint DISPLAY_I2C_SDA = 2;
+constexpr uint DISPLAY_I2C_SCL = 3;
+constexpr i2c_inst_t *I2C_BUS = i2c1;
+constexpr uint LED_PIN = PICO_DEFAULT_LED_PIN; // 6;
+constexpr uint POTENTIOMETER_PIN = 26;
+constexpr uint POTENTIOMETER_CH = 0;
+constexpr uint TOGGLE_PIN = 7;
+constexpr uint FOOT_SWITCH_PIN = 8;
+constexpr uint ADC_SPI_SCK_PIN = PICO_DEFAULT_SPI_SCK_PIN;
+constexpr uint ADC_SPI_CS_PIN = PICO_DEFAULT_SPI_CSN_PIN;
+constexpr uint ADC_SPI_MISO_PIN = PICO_DEFAULT_SPI_RX_PIN;
+constexpr uint ADC_SPI_MOSI_PIN = PICO_DEFAULT_SPI_TX_PIN;
+// constexpr spi_inst_t *SPI_BUS = spi0;
+constexpr unsigned long INPUT_READ_PERIOD = 50; // ms
+
+FxManager fx(Adc::ADC_MIN, Adc::ADC_MAX);
+Adc adc(ADC_SPI_SCK_PIN, ADC_SPI_CS_PIN, ADC_SPI_MISO_PIN, ADC_SPI_MOSI_PIN, spi0);
+AudioPwm pwm(PWM_OUT_1_PIN, PWM_OUT_2_PIN);
+Button button_back(BUTTON_BACK_PIN);
+Button button_next(BUTTON_NEXT_PIN);
+Display display(DISPLAY_I2C_SDA, DISPLAY_I2C_SCL, I2C_BUS);
+Led led(LED_PIN);
+Potentiometer gain_pot(POTENTIOMETER_PIN, POTENTIOMETER_CH);
+Switch toggle(TOGGLE_PIN);
+Switch foot_switch(FOOT_SWITCH_PIN);
+
+bool enable_audio_fx = false;
+unsigned long last_input_reading_ts = 0UL;
+
+void read_inputs()
+{
+    auto now = to_ms_since_boot(get_absolute_time());
+    if (now - last_input_reading_ts >= INPUT_READ_PERIOD)
+    {
+        // Cycle effects upon button press
+        if (button_back.is_pressed_and_released())
+        {
+            fx.previous_effect();
+        }
+        else if (button_next.is_pressed_and_released())
+        {
+            fx.next_effect();
+        }
+        display.set_fx_name(fx.get_effect_name());
+
+        // TODO decide what to do with this
+        // if (toggle.is_on())
+        // {
+        //     // Do something when the switch is on
+        // }
+        // else
+        // {
+        //     // Do something when the switch is off
+        // }
+        display.set_toggle_status(toggle.is_on());
+
+        // Update effect gain based on input potentiometer value
+        float gain = gain_pot.get_percent_value();
+        fx.set_gain(gain);
+        display.set_gain_percent(gain);
+
+        // Enable the audio processing when the foot switch is on
+        enable_audio_fx = foot_switch.is_on();
+        display.set_fx_enabled(enable_audio_fx);
+        // Turn also the LED on
+        led.set(enable_audio_fx);
+
+        // Store for next iteration
+        last_input_reading_ts = now;
+    }
+}
+
+void core1_routine()
+{
+    while (true)
+    {
+        read_inputs();
+        display.show();
+    }
+}
+
+void setup()
+{
+    // Setup global platform configuration
+    stdio_init_all();
+
+    // To not slow down the audio processing, read inputs and update the display on
+    // the second core
+    multicore_launch_core1(core1_routine);
+}
+
+void loop()
+{
+    uint32_t audio_input(0);
+    uint32_t audio_output(0);
+
+    // Perform audio processing only when required
+    if (enable_audio_fx)
+    {
+        // Read audio input from the ADC
+        audio_input = adc.read();
+
+        // Process audio through the active effect
+        if (not fx.process(audio_input, audio_output))
+        {
+            // If the effect fails, pass through the input audio and show a message
+            audio_output = audio_input;
+            display.set_message("Error processing audio");
+        }
+    }
+
+    // Send output through the PWM
+    pwm.send(audio_output);
+}
 
 int main()
 {
-    stdio_init_all();
-
-    PicoPedal pedal;
+    setup();
 
     while (true)
     {
-        pedal.spin();
+        loop();
     }
     return 0;
 }
