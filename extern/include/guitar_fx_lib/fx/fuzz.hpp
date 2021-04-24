@@ -2,18 +2,16 @@
 
 #include <guitar_fx_lib/interfaces/effect.hpp>
 
-class Distortion : public Effect
+class Fuzz : public Effect
 {
   public:
-    Distortion(const uint32_t &min, const uint32_t &max)
+    Fuzz(const uint32_t &min, const uint32_t &max)
     {
         set_signal_limits(min, max);
         threshold_min = 0.025f * signal_mid;
     }
-    ~Distortion() = default;
+    ~Fuzz() = default;
 
-    // Override this setting values that do not depend on the input signal
-    // so that the process() method is as simple as possible
     void set_gain(const float &value) override
     {
         gain = value;
@@ -24,15 +22,26 @@ class Distortion : public Effect
 
     bool process(const uint32_t &input, uint32_t &output) override
     {
-        // The effect clamp the signal between upper and lower limits
-        output = std::min<uint32_t>(std::max<uint32_t>(input, lower_bound), upper_bound);
+        // The effect inflates the signal when outside upper and lower limits
+        if (input > upper_bound)
+        {
+            output = signal_max;
+        }
+        else if (input < lower_bound)
+        {
+            output = signal_min;
+        }
+        else
+        {
+            output = input;
+        }
 
         return true;
     }
 
     std::string get_name()
     {
-        return "Distortion";
+        return "Fuzz";
     }
 
   private:

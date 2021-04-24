@@ -6,6 +6,7 @@
 
 #include <guitar_fx_lib/fx/clean.hpp>
 #include <guitar_fx_lib/fx/distortion.hpp>
+#include <guitar_fx_lib/fx/fuzz.hpp>
 #include <guitar_fx_lib/interfaces/effect.hpp>
 
 class FxManager
@@ -15,6 +16,7 @@ class FxManager
     {
         effects.push_back(std::make_unique<Clean>(min, max));
         effects.push_back(std::make_unique<Distortion>(min, max));
+        effects.push_back(std::make_unique<Fuzz>(min, max));
         effects_it = effects.begin();
     }
 
