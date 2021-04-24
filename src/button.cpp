@@ -5,12 +5,13 @@ Button::Button(const uint &pin) : pin(pin)
     gpio_init(pin);
     gpio_set_dir(pin, GPIO_IN);
     gpio_pull_up(pin);
-    state = gpio_get(pin);
+    state = get_state();
 }
 
 bool Button::is_pressed_and_released()
 {
-    bool value = gpio_get(pin);
+    // TODO handle debouncing
+    bool value = get_state();
     if (value != state)
     {
         state = value;
@@ -20,4 +21,10 @@ bool Button::is_pressed_and_released()
         }
     }
     return false;
+}
+
+bool Button::get_state()
+{
+    // High = button not pressed
+    return not gpio_get(pin);
 }

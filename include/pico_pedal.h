@@ -40,6 +40,9 @@ class PicoPedal
     static constexpr uint ADC_SPI_MISO_PIN = PICO_DEFAULT_SPI_RX_PIN;
     static constexpr uint ADC_SPI_MOSI_PIN = PICO_DEFAULT_SPI_TX_PIN;
     // static constexpr spi_inst_t *SPI_BUS = spi0;
+    static constexpr unsigned long INPUT_READ_PERIOD = 50; // ms
+
+    void read_inputs();
 
     FxManager fx;
     Adc adc;
@@ -51,4 +54,7 @@ class PicoPedal
     Potentiometer gain_pot;
     Switch toggle;
     Switch foot_switch;
+
+    bool enable_audio_fx = false;
+    unsigned long last_input_reading_ts = 0UL;
 };

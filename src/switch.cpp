@@ -9,7 +9,8 @@ Switch::Switch(const uint &pin) : pin(pin)
 
 bool Switch::is_on()
 {
-    return gpio_get(pin);
+    // TODO handle debouncing
+    return not gpio_get(pin);
 }
 
 bool Switch::is_off()

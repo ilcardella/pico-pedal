@@ -15,3 +15,8 @@ void Led::off()
 {
     gpio_put(pin, 0);
 }
+
+void Led::set(const bool &enable)
+{
+    enable ? on() : off();
+}

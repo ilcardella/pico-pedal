@@ -20,6 +20,7 @@ class Adc
   private:
     // 12 bit ADC read channel 0
     static constexpr std::array<uint8_t, 3> CHANNEL_0_REQ = {0x01, 0x00, 0x00};
+    // TODO is this too high? Maybe 0.9Mhz?
     static constexpr unsigned int SPI_FREQ = 4000000; // 4Mhz
 
     uint clk_pin;

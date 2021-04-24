@@ -11,6 +11,7 @@ class Potentiometer
     float get_percent_value();
 
   private:
+    static constexpr int ADC_VALUES = 4096;
     uint pin;
     uint channel;
 };

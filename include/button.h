@@ -11,6 +11,8 @@ class Button
     bool is_pressed_and_released();
 
   private:
+    bool get_state();
+
     uint pin;
     bool state = false;
 };

@@ -15,8 +15,21 @@ class Display
     Display(const uint &sda, const uint &scl, i2c_inst_t *bus);
     ~Display() = default;
 
+    struct DisplayBuffer
+    {
+        std::string message;
+        std::string fx_name = "Unknown";
+        unsigned int gain_percent = 0;
+        bool fx_enabled = false;
+        bool toggle_on = false;
+    };
+
     void set_fx_name(const std::string &value);
     void set_message(const std::string &value);
+    void set_gain_percent(const float &value);
+    void set_fx_enabled(const bool &enabled);
+    void set_toggle_status(const bool &enabled);
+
     void show();
 
   private:
@@ -30,6 +43,5 @@ class Display
     static constexpr unsigned long I2C_FREQ = 400000;    // Hz
     unsigned long start_time = 0;
     unsigned long previous_update_time = 0;
-    std::string message = "Standby";
-    std::string fx_name = "Unknown";
+    DisplayBuffer buffer;
 };

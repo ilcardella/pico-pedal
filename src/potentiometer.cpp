@@ -11,7 +11,6 @@ Potentiometer::Potentiometer(const uint &p, const uint &ch) : pin(p), channel(ch
 
 float Potentiometer::get_percent_value()
 {
-    uint16_t result = adc_read();
-
-    return static_cast<float>(result / 4096);
+    uint16_t value = adc_read();
+    return static_cast<float>(value) / ADC_VALUES;
 }

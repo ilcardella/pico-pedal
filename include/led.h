@@ -10,6 +10,7 @@ class Led
 
     void on();
     void off();
+    void set(const bool &enable);
 
   private:
     uint pin;

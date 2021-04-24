@@ -29,6 +29,8 @@ Adc::Adc(const uint &clk, const uint &cs, const uint &miso, const uint &mosi,
     gpio_put(cs_pin, 1);
 }
 
+// TODO we might have to pace this at a specific freq, maybe 100KHz?
+// It's possible that it's enough to set the spi freq
 uint32_t Adc::read()
 {
     uint32_t signal(0);

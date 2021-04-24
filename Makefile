@@ -24,4 +24,7 @@ clean:
 
 ci: docker build
 
-.PHONY: default docker build local-build clean ci
+deploy: build
+> cp build/*.uf2 /media/alberto/RPI-RP2/
+
+.PHONY: default docker build local-build clean ci deploy

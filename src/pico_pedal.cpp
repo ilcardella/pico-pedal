@@ -1,5 +1,7 @@
 #include "pico_pedal.h"
 
+#include <pico/stdlib.h>
+
 PicoPedal::PicoPedal()
     : fx(Adc::ADC_MIN, Adc::ADC_MAX),
       adc(ADC_SPI_SCK_PIN, ADC_SPI_CS_PIN, ADC_SPI_MISO_PIN, ADC_SPI_MOSI_PIN, spi0),
@@ -12,59 +14,74 @@ PicoPedal::PicoPedal()
 
 void PicoPedal::spin()
 {
-    std::string message = "";
+    uint32_t audio_input(0);
+    uint32_t audio_output(0);
 
-    // Cycle effects upon button press
-    if (button_back.is_pressed_and_released())
-    {
-        fx.previous_effect();
-    }
-    else if (button_next.is_pressed_and_released())
-    {
-        fx.next_effect();
-    }
+    // Process the inputs
+    read_inputs();
 
-    if (toggle.is_on())
+    // Perform audio processing only when required
+    if (enable_audio_fx)
     {
-        // Do something when the switch is on
-    }
-    else
-    {
-        // Do something when the switch is off
-    }
-
-    // Update effect gain based on input potentiometer value
-    fx.set_gain(gain_pot.get_percent_value());
-
-    // Perform audio processing only when the footswitch is on
-    if (foot_switch.is_on())
-    {
-        led.on();
-
         // Read audio input from the ADC
-        uint32_t audio_input(adc.read());
-        uint32_t audio_output(0);
+        audio_input = adc.read();
 
         // Process audio through the active effect
-        if (fx.process(audio_input, audio_output))
-        {
-            // Send audio output out
-            pwm.send(audio_output);
-        }
-        else
+        if (not fx.process(audio_input, audio_output))
         {
             // If the effect fails, pass through the input audio and show a message
-            pwm.send(audio_input);
-            message = "Error processing audio";
+            audio_output = audio_input;
+            display.set_message("Error processing audio");
         }
     }
-    else
-    {
-        led.off();
-    }
 
+    // Send output through the PWM
+    pwm.send(audio_output);
+
+    // TODO could we use the second core for this?
     // Update display
-    display.set_message(message);
-    display.set_fx_name(fx.get_effect_name());
     display.show();
+}
+
+void PicoPedal::read_inputs()
+{
+    auto now = to_ms_since_boot(get_absolute_time());
+    if (now - last_input_reading_ts >= INPUT_READ_PERIOD)
+    {
+        // Cycle effects upon button press
+        if (button_back.is_pressed_and_released())
+        {
+            fx.previous_effect();
+        }
+        else if (button_next.is_pressed_and_released())
+        {
+            fx.next_effect();
+        }
+        display.set_fx_name(fx.get_effect_name());
+
+        // TODO decide what to do with this
+        // if (toggle.is_on())
+        // {
+        //     // Do something when the switch is on
+        // }
+        // else
+        // {
+        //     // Do something when the switch is off
+        // }
+        display.set_toggle_status(toggle.is_on());
+
+        // Update effect gain based on input potentiometer value
+        float gain = gain_pot.get_percent_value();
+        fx.set_gain(gain);
+        display.set_gain_percent(gain);
+
+        // Enable the audio processing when the foot switch is on
+        enable_audio_fx = foot_switch.is_on();
+        display.set_fx_enabled(enable_audio_fx);
+        // Turn also the LED on
+        led.set(enable_audio_fx);
+
+        // Store for next iteration
+        last_input_reading_ts = now;
+    }
 }

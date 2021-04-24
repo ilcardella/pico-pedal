@@ -2,7 +2,8 @@
 
 #include "ssd1306/logo.hpp"
 
-Display::Display(const uint &sda, const uint &scl, i2c_inst_t *bus) : i2c_bus(bus)
+Display::Display(const uint &sda, const uint &scl, i2c_inst_t *bus)
+    : i2c_bus(bus), buffer()
 {
     i2c_init(i2c_bus, I2C_FREQ);
     gpio_set_function(sda, GPIO_FUNC_I2C);
@@ -17,12 +18,27 @@ Display::Display(const uint &sda, const uint &scl, i2c_inst_t *bus) : i2c_bus(bu
 
 void Display::set_fx_name(const std::string &value)
 {
-    fx_name = value;
+    buffer.fx_name = value;
 }
 
 void Display::set_message(const std::string &value)
 {
-    message = value;
+    buffer.message = value;
+}
+
+void Display::set_gain_percent(const float &value)
+{
+    buffer.gain_percent = static_cast<unsigned int>(value * 100);
+}
+
+void Display::set_fx_enabled(const bool &enabled)
+{
+    buffer.fx_enabled = enabled;
+}
+
+void Display::set_toggle_status(const bool &enabled)
+{
+    buffer.toggle_on = enabled;
 }
 
 void Display::show()
@@ -32,8 +48,11 @@ void Display::show()
     {
         oled->clear();
         // TODO Make it pretty
-        oled->drawString(1, 1, fx_name);
-        oled->drawString(1, 50, message);
+        oled->drawString(1, 1, buffer.fx_name);
+        oled->drawString(1, 12, std::to_string(buffer.gain_percent));
+        oled->drawString(1, 24, std::to_string(buffer.fx_enabled));
+        oled->drawString(1, 36, std::to_string(buffer.toggle_on));
+        oled->drawString(1, 50, buffer.message);
         oled->display();
         previous_update_time = now;
     }

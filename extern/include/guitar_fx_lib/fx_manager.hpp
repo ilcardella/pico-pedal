@@ -44,7 +44,7 @@ class FxManager
     {
         if (effects_it == effects.begin())
         {
-            effects_it = effects.end();
+            effects_it = effects.end() - 1;
         }
         else
         {

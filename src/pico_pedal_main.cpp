@@ -1,23 +1,14 @@
 #include "pico_pedal.h"
 
-PicoPedal pedal;
-
-void setup()
-{
-    stdio_init_all();
-}
-
-void loop()
-{
-    pedal.spin();
-}
-
 int main()
 {
-    setup();
+    stdio_init_all();
+
+    PicoPedal pedal;
+
     while (true)
     {
-        loop();
+        pedal.spin();
     }
     return 0;
 }
