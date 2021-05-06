@@ -3,9 +3,9 @@ cmake_minimum_required(VERSION 3.10)
 # set the project name
 project(guitar_fx_lib VERSION 0.1.0)
 
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
+# set(CMAKE_CXX_STANDARD 17)
+# set(CMAKE_CXX_STANDARD_REQUIRED ON)
+# set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Setup variables for install targets
 include(GNUInstallDirs)
@@ -19,7 +19,7 @@ target_include_directories(
 
 # TODO this makes gcc-arm-none-eabi 9.2.1 fail with "No known features for CXX compiler"
 # The workaround is to set the CMAKE_CXX vars above
-# target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_17)
+target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_17)
 
 # Enable testing only when building this project directly
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)

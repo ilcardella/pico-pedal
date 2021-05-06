@@ -1,4 +1,4 @@
-# pico-pedal
+# zero-pedal
 
 TBD
 

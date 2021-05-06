@@ -9,10 +9,9 @@
 
 #include <guitar_fx_lib/fx_manager.hpp>
 
-#include <hardware/i2c.h>
-#include <hardware/spi.h>
-#include <pico/multicore.h>
-#include <pico/stdlib.h>
+#include <bcm2835.h>
+
+// using uint = unsigned int;
 
 constexpr uint PWM_OUT_1_PIN = 22;
 constexpr uint PWM_OUT_2_PIN = 21;
@@ -101,18 +100,7 @@ void core1_routine()
 
 void setup()
 {
-    // Setup global platform configuration
-    stdio_init_all();
-
-    // Overclock the CPU for a value multiple of common audio sampling rate
-    set_sys_clock_khz((SYSTEM_CLOCK_FREQ / 1000), true);
-
-    // To not slow down the audio processing, read inputs and update the display on
-    // the second core
-    multicore_launch_core1(core1_routine);
-
-    // Just to make sure everything is initialised
-    sleep_ms(1000);
+    bcm2835_init();
 }
 
 void loop()
