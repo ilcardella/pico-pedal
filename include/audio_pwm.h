@@ -6,7 +6,7 @@
 class AudioPwm
 {
   public:
-    AudioPwm(const uint &pwm1, const uint &pwm2);
+    AudioPwm(const uint &pwm1, const uint &pwm2, const uint32_t &clock_freq = 133000000);
     ~AudioPwm() = default;
 
     void send(const uint32_t &signal);

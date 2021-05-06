@@ -30,12 +30,12 @@ constexpr uint ADC_SPI_SCK_PIN = PICO_DEFAULT_SPI_SCK_PIN;
 constexpr uint ADC_SPI_CS_PIN = PICO_DEFAULT_SPI_CSN_PIN;
 constexpr uint ADC_SPI_MISO_PIN = PICO_DEFAULT_SPI_RX_PIN;
 constexpr uint ADC_SPI_MOSI_PIN = PICO_DEFAULT_SPI_TX_PIN;
-// constexpr spi_inst_t *SPI_BUS = spi0;
-constexpr unsigned long INPUT_READ_PERIOD = 50; // ms
+constexpr unsigned long INPUT_READ_PERIOD = 50;   // ms
+constexpr uint32_t SYSTEM_CLOCK_FREQ = 220000000; // Hz
 
 FxManager fx(Adc::ADC_MIN, Adc::ADC_MAX);
 Adc adc(ADC_SPI_SCK_PIN, ADC_SPI_CS_PIN, ADC_SPI_MISO_PIN, ADC_SPI_MOSI_PIN, spi0);
-AudioPwm pwm(PWM_OUT_1_PIN, PWM_OUT_2_PIN);
+AudioPwm pwm(PWM_OUT_1_PIN, PWM_OUT_2_PIN, SYSTEM_CLOCK_FREQ);
 Button button_back(BUTTON_BACK_PIN);
 Button button_next(BUTTON_NEXT_PIN);
 Display display(DISPLAY_I2C_SDA, DISPLAY_I2C_SCL, I2C_BUS);
@@ -104,9 +104,15 @@ void setup()
     // Setup global platform configuration
     stdio_init_all();
 
+    // Overclock the CPU for a value multiple of common audio sampling rate
+    set_sys_clock_khz((SYSTEM_CLOCK_FREQ / 1000), true);
+
     // To not slow down the audio processing, read inputs and update the display on
     // the second core
     multicore_launch_core1(core1_routine);
+
+    // Just to make sure everything is initialised
+    sleep_ms(1000);
 }
 
 void loop()
