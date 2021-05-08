@@ -14,7 +14,10 @@ docker:
 > $(DOCKER_BUILD)
 
 test:
-> $(DOCKER_RUN) scripts/test-project.sh
+> $(DOCKER_RUN) make do-test
+
+do-test:
+> scripts/test.sh
 
 ci: docker test
 
@@ -24,4 +27,4 @@ clean:
 install: clean
 > scripts/install.sh
 
-.PHONY: default ci test docker clean install
+.PHONY: default ci test do-test docker clean install

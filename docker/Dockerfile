@@ -21,5 +21,5 @@ RUN git clone --depth 1 --branch ${PICO_SDK_VERSION} \
     ${PICO_SDK_PATH} \
     && git -C ${PICO_SDK_PATH} submodule update --init
 
-COPY ./extern /opt/guitar_fx_lib
+COPY ./extern/guitar_fx_lib /opt/guitar_fx_lib
 RUN make -C /opt/guitar_fx_lib install
