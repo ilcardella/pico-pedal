@@ -31,11 +31,11 @@ constexpr uint ADC_SPI_CS_PIN = PICO_DEFAULT_SPI_CSN_PIN;
 constexpr uint ADC_SPI_MISO_PIN = PICO_DEFAULT_SPI_RX_PIN;
 constexpr uint ADC_SPI_MOSI_PIN = PICO_DEFAULT_SPI_TX_PIN;
 constexpr unsigned long INPUT_READ_PERIOD = 50;   // ms
-constexpr uint32_t SYSTEM_CLOCK_FREQ = 220000000; // Hz
+constexpr uint32_t SYSTEM_CLOCK_FREQ = 176000000; // Hz
 
 FxManager fx(Adc::ADC_MIN, Adc::ADC_MAX);
 Adc adc(ADC_SPI_SCK_PIN, ADC_SPI_CS_PIN, ADC_SPI_MISO_PIN, ADC_SPI_MOSI_PIN, spi0);
-AudioPwm pwm(PWM_OUT_1_PIN, PWM_OUT_2_PIN, SYSTEM_CLOCK_FREQ);
+AudioPwm pwm(PWM_OUT_1_PIN, PWM_OUT_2_PIN);
 Button button_back(BUTTON_BACK_PIN);
 Button button_next(BUTTON_NEXT_PIN);
 Display display(DISPLAY_I2C_SDA, DISPLAY_I2C_SCL, I2C_BUS);
