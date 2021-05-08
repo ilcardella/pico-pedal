@@ -23,9 +23,13 @@ class FxManager
     ~FxManager() = default;
 
     // Set the current effect gain. value must be in range [0.0, 1.0]
-    void set_gain(const float &value)
+    bool set_gain(const float &value)
     {
-        (*effects_it)->set_gain(value);
+        if (value < 0.0f or value > 1.0f)
+        {
+            return false;
+        }
+        return (*effects_it)->set_gain(value);
     }
 
     // Select the next effect. Wrap around after the last effect to start from the
@@ -60,9 +64,17 @@ class FxManager
         return (*effects_it)->process(input, output);
     }
 
-    std::string get_effect_name()
+    std::string get_active_effect_name()
     {
         return (*effects_it)->get_name();
+    }
+
+    std::vector<std::string> get_all_effects_names()
+    {
+        std::vector<std::string> names;
+        std::transform(effects.begin(), effects.end(), std::back_inserter(names),
+                       [](const auto &effect) { return effect->get_name(); });
+        return names;
     }
 
   private:

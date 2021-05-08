@@ -20,9 +20,16 @@ class Effect
     }
 
     // Set the effect gain. value must be in range [0.0, 1.0]
-    virtual void set_gain(const float &value)
+    virtual bool set_gain(const float &value)
     {
+        if (value < 0.0f or value > 1.0f)
+        {
+            return false;
+        }
+
         gain = value;
+
+        return true;
     }
 
   protected:

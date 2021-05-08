@@ -64,7 +64,7 @@ void read_inputs()
         {
             fx->next_effect();
         }
-        display->set_fx_name(fx->get_effect_name());
+        display->set_fx_name(fx->get_active_effect_name());
 
         // TODO decide what to do with this
         // if (toggle.is_on())

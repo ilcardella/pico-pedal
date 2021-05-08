@@ -14,12 +14,13 @@ class Distortion : public Effect
 
     // Override this setting values that do not depend on the input signal
     // so that the process() method is as simple as possible
-    void set_gain(const float &value) override
+    bool set_gain(const float &value) override
     {
         gain = value;
         uint32_t threshold = std::max<uint32_t>(threshold_min, gain * signal_mid);
         upper_bound = signal_mid + threshold;
         lower_bound = signal_mid - threshold;
+        return true;
     }
 
     bool process(const uint32_t &input, uint32_t &output) override
