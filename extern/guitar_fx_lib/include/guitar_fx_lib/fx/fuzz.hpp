@@ -8,7 +8,9 @@ class Fuzz : public Effect
     Fuzz(const uint32_t &min, const uint32_t &max)
     {
         set_signal_limits(min, max);
-        threshold_min = 0.025f * signal_mid;
+        signal_mid = 2120; // TODO: Offset from real mid
+        threshold_min = 3;
+        threshold_max = signal_mid;
     }
     ~Fuzz() = default;
 
@@ -19,8 +21,11 @@ class Fuzz : public Effect
             return false;
         }
 
-        gain = value;
-        uint32_t threshold = std::max<uint32_t>(threshold_min, gain * signal_mid);
+        // Higher values should reduce the threshold window and viceversa
+        gain = 1 - value;
+
+        uint32_t threshold =
+            std::max<uint32_t>(threshold_min, (threshold_max - threshold_min) * gain);
         upper_bound = signal_mid + threshold;
         lower_bound = signal_mid - threshold;
         return true;
@@ -57,6 +62,7 @@ class Fuzz : public Effect
 
   private:
     uint32_t threshold_min = 0;
+    uint32_t threshold_max = 0;
     uint32_t upper_bound = 0;
     uint32_t lower_bound = 0;
 };

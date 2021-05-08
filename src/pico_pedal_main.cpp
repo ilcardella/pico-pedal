@@ -34,7 +34,7 @@ constexpr uint ADC_SPI_CS_PIN = PICO_DEFAULT_SPI_CSN_PIN;
 constexpr uint ADC_SPI_MISO_PIN = PICO_DEFAULT_SPI_RX_PIN;
 constexpr uint ADC_SPI_MOSI_PIN = PICO_DEFAULT_SPI_TX_PIN;
 constexpr unsigned long INPUT_READ_PERIOD = 50; // ms
-constexpr uint32_t SYSTEM_CLOCK_FREQ = 176 * MHZ; // Hz
+constexpr uint32_t SYSTEM_CLOCK_FREQ = 220 * MHZ; // Hz
 
 std::unique_ptr<FxManager> fx;
 std::unique_ptr<Adc> adc;
@@ -79,7 +79,7 @@ void read_inputs()
 
         // Update effect gain based on input potentiometer value
         float gain = gain_pot->get_percent_value();
-        fx->set_gain(gain);
+        fx->set_gain(0.9); // TODO: for testing
         display->set_gain_percent(gain);
 
         // Enable the audio processing when the foot switch is on
