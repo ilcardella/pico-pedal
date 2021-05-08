@@ -21,5 +21,7 @@ mark_as_advanced(
 )
 
 custom_add_gtest("test_fx_manager")
+custom_add_gtest("test_effect_clean")
+custom_add_gtest("test_effect_distortion")
 
 add_custom_target(run_tests COMMAND ctest ARGS --output-on-failure --verbose)
