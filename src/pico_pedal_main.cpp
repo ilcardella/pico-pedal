@@ -34,7 +34,7 @@ constexpr uint ADC_SPI_CS_PIN = PICO_DEFAULT_SPI_CSN_PIN;
 constexpr uint ADC_SPI_MISO_PIN = PICO_DEFAULT_SPI_RX_PIN;
 constexpr uint ADC_SPI_MOSI_PIN = PICO_DEFAULT_SPI_TX_PIN;
 constexpr unsigned long INPUT_READ_PERIOD = 50; // ms
-constexpr uint32_t SYSTEM_CLOCK_FREQ_KHZ = 176 * KHZ;
+constexpr uint32_t SYSTEM_CLOCK_FREQ = 176 * MHZ; // Hz
 
 std::unique_ptr<FxManager> fx;
 std::unique_ptr<Adc> adc;
@@ -108,7 +108,7 @@ bool setup()
     stdio_init_all();
 
     // Overclock the CPU for a value multiple of common audio sampling rate
-    set_sys_clock_khz(SYSTEM_CLOCK_FREQ_KHZ, true);
+    set_sys_clock_khz(SYSTEM_CLOCK_FREQ / 1000, true);
 
     // Initialise components
     fx = std::make_unique<FxManager>(Adc::ADC_MIN, Adc::ADC_MAX);
