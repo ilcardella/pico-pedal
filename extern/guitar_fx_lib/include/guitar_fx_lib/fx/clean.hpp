@@ -13,6 +13,11 @@ class Clean : public Effect
 
     bool process(const uint32_t &input, uint32_t &output) override
     {
+        if (input < signal_min or input > signal_max)
+        {
+            return false;
+        }
+
         output = input;
         return true;
     }

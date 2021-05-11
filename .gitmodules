@@ -1,0 +1,3 @@
+[submodule "extern/guitar_fx_lib/extern/googletest"]
+	path = extern/guitar_fx_lib/extern/googletest
+	url = https://github.com/google/googletest.git

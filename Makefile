@@ -22,9 +22,12 @@ local-build: clean
 clean:
 > rm -rf build
 
-ci: docker build
+ci: docker test-lib build
+
+test-lib:
+> $(DOCKER_RUN) make -C extern/guitar_fx_lib do-test
 
 deploy: build
-> cp build/*.uf2 /media/alberto/RPI-RP2/
+> cp build/*.uf2 /media/${USER}/RPI-RP2/
 
 .PHONY: default docker build local-build clean ci deploy
