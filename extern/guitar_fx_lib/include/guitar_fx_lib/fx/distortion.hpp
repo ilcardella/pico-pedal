@@ -8,7 +8,7 @@ class Distortion : public Effect
     Distortion(const uint32_t &min, const uint32_t &max)
     {
         set_signal_limits(min, max);
-        signal_mid = 2120; // TODO: Offset from real mid
+        // signal_mid = 2120;
         threshold_min = 3;
         threshold_max = signal_mid;
     }
@@ -24,7 +24,7 @@ class Distortion : public Effect
         }
 
         // Higher values should reduce the threshold window and viceversa
-        gain = 1 - value;
+        gain = 1.0f - value;
 
         uint32_t threshold =
             std::max<uint32_t>(threshold_min, (threshold_max - threshold_min) * gain);

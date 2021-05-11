@@ -35,10 +35,14 @@ TEST_F(TestEffectDistortion, testProcessValidSignal)
     uint32_t max = 4095;
     uint32_t mid = (max - min) / 2;
     uint32_t output = 0;
-    float gain = 0.8f;
+    uint32_t threshold_min = 3;   // From effect implementation
+    uint32_t threshold_max = mid; // From effect implementation
+    float gain = 0.2f;            // = 80%
 
-    uint32_t upper_threshold = mid + (mid * gain);
-    uint32_t lower_threshold = mid - (mid * gain) + 1;
+    uint32_t threshold =
+        std::max<uint32_t>(threshold_min, (threshold_max - threshold_min) * (1 - gain));
+    uint32_t upper_threshold = mid + threshold;
+    uint32_t lower_threshold = mid - threshold;
 
     Distortion dist(min, max);
     dist.set_gain(gain);
