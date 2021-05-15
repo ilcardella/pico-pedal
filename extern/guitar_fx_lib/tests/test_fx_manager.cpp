@@ -17,10 +17,9 @@ TEST_F(TestFxManager, testInitialisation)
 
     FxManager fx(0, 1);
     auto names = fx.get_all_effects_names();
-    ASSERT_EQ(names.size(), 3);
+    ASSERT_EQ(names.size(), 2);
     ASSERT_EQ(names[0], "Clean");
     ASSERT_EQ(names[1], "Distortion");
-    ASSERT_EQ(names[2], "Fuzz");
 }
 
 TEST_F(TestFxManager, testCycleThroughNextEffects)
@@ -74,14 +73,18 @@ TEST_F(TestFxManager, testSetGain)
 
 TEST_F(TestFxManager, testProcessSignal)
 {
-    FxManager fx(0, 4095);
-    uint32_t input = 100;
-    uint32_t output = 0;
-
-    auto names = fx.get_all_effects_names();
-    for (unsigned i = 0; i < names.size(); ++i)
+    // Process all the effects with all possible inputs
+    for (uint32_t input = 0; input < 4096; ++input)
     {
-        ASSERT_TRUE(fx.process(input, output));
-        ASSERT_NO_THROW(fx.next_effect());
+        FxManager fx(0, 4095);
+        auto names = fx.get_all_effects_names();
+
+        for (unsigned i = 0; i < names.size(); ++i)
+        {
+            uint32_t output = 0;
+            ASSERT_TRUE(fx.process(input, output))
+                << "Effect " << names[i] << " failed with input " << input;
+            ASSERT_NO_THROW(fx.next_effect());
+        }
     }
 }

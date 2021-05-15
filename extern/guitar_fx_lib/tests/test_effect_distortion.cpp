@@ -8,15 +8,15 @@ class TestEffectDistortion : public ::testing::Test
 
 TEST_F(TestEffectDistortion, testEffectInit)
 {
-    ASSERT_NO_THROW(Distortion dist(0, 1));
+    ASSERT_NO_THROW(Distortion dist);
 
-    Distortion dist(0, 1);
+    Distortion dist;
     ASSERT_EQ(dist.get_name(), "Distortion");
 }
 
 TEST_F(TestEffectDistortion, testSetGain)
 {
-    Distortion dist(0, 1);
+    Distortion dist;
 
     ASSERT_TRUE(dist.set_gain(0.0f));
     ASSERT_TRUE(dist.set_gain(0.12f));
@@ -31,23 +31,20 @@ TEST_F(TestEffectDistortion, testSetGain)
 
 TEST_F(TestEffectDistortion, testProcessValidSignal)
 {
-    uint32_t min = 0;
-    uint32_t max = 4095;
-    uint32_t mid = (max - min) / 2;
-    uint32_t output = 0;
-    uint32_t threshold_min = 3;   // From effect implementation
-    uint32_t threshold_max = mid; // From effect implementation
-    float gain = 0.2f;            // = 80%
+    float output = 0.0f;
+    float threshold_min = 0.02f; // From effect implementation
+    float threshold_max = 1.0f;
+    float gain = 0.2f; // = 80%
 
-    uint32_t threshold =
-        std::max<uint32_t>(threshold_min, (threshold_max - threshold_min) * (1 - gain));
-    uint32_t upper_threshold = mid + threshold;
-    uint32_t lower_threshold = mid - threshold;
+    float threshold =
+        std::max<float>(threshold_min, (threshold_max - threshold_min) * (1 - gain));
+    float upper_threshold = threshold;
+    float lower_threshold = -1 * threshold;
 
-    Distortion dist(min, max);
+    Distortion dist;
     dist.set_gain(gain);
 
-    for (uint32_t input = 0; input < max + 1; ++input)
+    for (float input = -1.0f; input <= 1.0f; input += 0.1f)
     {
         ASSERT_TRUE(dist.process(input, output));
 
@@ -68,13 +65,16 @@ TEST_F(TestEffectDistortion, testProcessValidSignal)
 
 TEST_F(TestEffectDistortion, testProcessInvalidSignal)
 {
-    uint32_t output = 0;
+    float output = 0;
 
-    Distortion dist(0, 4095);
+    Distortion dist;
 
-    for (uint32_t input = 4096; input < 8000; ++input)
+    for (float input = -100.0f; input <= 100.0f; input += 0.1f)
     {
-        ASSERT_FALSE(dist.process(input, output));
-        ASSERT_EQ(0, output);
+        if (input < -1.0f or input > 1.0f)
+        {
+            ASSERT_FALSE(dist.process(input, output));
+            ASSERT_EQ(0, output);
+        }
     }
 }

@@ -8,17 +8,16 @@
 
 #include <guitar_fx_lib/fx/clean.hpp>
 #include <guitar_fx_lib/fx/distortion.hpp>
-#include <guitar_fx_lib/fx/fuzz.hpp>
 #include <guitar_fx_lib/interfaces/effect.hpp>
 
 class FxManager
 {
   public:
     FxManager(const uint32_t &min, const uint32_t &max)
+        : signal_min(min), signal_max(max), signal_middle((max - min) / 2)
     {
-        effects.push_back(std::make_unique<Clean>(min, max));
-        effects.push_back(std::make_unique<Distortion>(min, max));
-        effects.push_back(std::make_unique<Fuzz>(min, max));
+        effects.push_back(std::make_unique<Clean>());
+        effects.push_back(std::make_unique<Distortion>());
         effects_it = effects.begin();
     }
 
@@ -63,7 +62,19 @@ class FxManager
     // Process an input signal into the current selected effect
     bool process(const uint32_t &input, uint32_t &output)
     {
-        return (*effects_it)->process(input, output);
+        float normalised_input(0.0f);
+        float normalised_output(0.0f);
+        output = 0;
+
+        normalised_input = normalise_input(input);
+
+        if ((*effects_it)->process(normalised_input, normalised_output))
+        {
+            output = convert_output(normalised_output);
+            return true;
+        }
+
+        return false;
     }
 
     std::string get_active_effect_name()
@@ -80,6 +91,25 @@ class FxManager
     }
 
   private:
+    float normalise_input(const uint32_t &input)
+    {
+        float input_f = static_cast<float>(input);
+        return (input_f - signal_middle) / (signal_middle + 1.0f);
+    }
+
+    uint32_t convert_output(const float &normalised_output)
+    {
+        float output(0.0f);
+
+        // Constraint the output before the conversion
+        output = std::min<float>(std::max<float>(normalised_output, -1.0f), 1.0f);
+
+        return output * (signal_middle + 1) + signal_middle;
+    }
+
+    uint32_t signal_max;
+    uint32_t signal_min;
+    uint32_t signal_middle;
     std::vector<EffectPtr> effects;
     std::vector<EffectPtr>::iterator effects_it;
 };

@@ -9,14 +9,16 @@ class Effect
     Effect() = default;
     virtual ~Effect() = default;
 
-    virtual bool process(const uint32_t &input, uint32_t &output) = 0;
     virtual std::string get_name() = 0;
 
-    virtual void set_signal_limits(const uint32_t &min, const uint32_t &max)
+    virtual bool process(const float &input, float &output)
     {
-        signal_max = max;
-        signal_min = min;
-        signal_mid = (max - min) / 2;
+        if (input < signal_min or input > signal_max)
+        {
+            return false;
+        }
+
+        return apply_fx(input, output);
     }
 
     // Set the effect gain. value must be in range [0.0, 1.0]
@@ -33,14 +35,16 @@ class Effect
     }
 
   protected:
-    // Effect gain in percentage
-    float gain = 50;
-    // Signal max value
-    uint32_t signal_max = 4095;
-    // Signal min value
-    uint32_t signal_min = 0;
-    // Signal middle level
-    uint32_t signal_mid = 2047;
+    virtual bool apply_fx(const float &input, float &output) = 0;
+
+    // Effect gain in percentage [0-100]
+    float gain = 0.0f;
+    // Signal max normalised value
+    static constexpr float signal_max = 1.0f;
+    // Signal min normalised value
+    static constexpr float signal_min = -1.0f;
+    // Signal middle normalised level
+    static constexpr float signal_mid = 0.0f;
 };
 
 using EffectPtr = std::unique_ptr<Effect>;
