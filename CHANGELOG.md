@@ -12,3 +12,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - I2C SSD1306 Display
   - Distortion effect
   - Echo effect
+  - Delay effect
