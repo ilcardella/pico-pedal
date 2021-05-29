@@ -93,8 +93,7 @@ class FxManager
   private:
     float normalise_input(const uint32_t &input)
     {
-        float input_f = static_cast<float>(input);
-        return (input_f - signal_middle) / (signal_middle + 1.0f);
+        return (static_cast<float>(input) - signal_middle) / (signal_middle + 1.0f);
     }
 
     uint32_t convert_output(const float &normalised_output)
@@ -104,7 +103,7 @@ class FxManager
         // Constraint the output before the conversion
         output = std::min<float>(std::max<float>(normalised_output, -1.0f), 1.0f);
 
-        return output * (signal_middle + 1) + signal_middle;
+        return output * ((signal_middle + 1) + signal_middle);
     }
 
     uint32_t signal_max;

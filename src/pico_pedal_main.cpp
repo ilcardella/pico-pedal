@@ -33,8 +33,9 @@ constexpr uint ADC_SPI_SCK_PIN = PICO_DEFAULT_SPI_SCK_PIN;
 constexpr uint ADC_SPI_CS_PIN = PICO_DEFAULT_SPI_CSN_PIN;
 constexpr uint ADC_SPI_MISO_PIN = PICO_DEFAULT_SPI_RX_PIN;
 constexpr uint ADC_SPI_MOSI_PIN = PICO_DEFAULT_SPI_TX_PIN;
-constexpr unsigned long INPUT_READ_PERIOD = 50; // ms
+constexpr unsigned long INPUT_READ_PERIOD = 200;  // ms
 constexpr uint32_t SYSTEM_CLOCK_FREQ = 220 * MHZ; // Hz
+constexpr bool ENABLE_MULTICORE = true;
 
 std::unique_ptr<FxManager> fx;
 std::unique_ptr<Adc> adc;
@@ -79,7 +80,7 @@ void read_inputs()
 
         // Update effect gain based on input potentiometer value
         float gain = gain_pot->get_percent_value();
-        fx->set_gain(0.9); // TODO: for testing
+        fx->set_gain(gain);
         display->set_gain_percent(gain);
 
         // Enable the audio processing when the foot switch is on
@@ -125,7 +126,10 @@ bool setup()
 
     // To not slow down the audio processing, read inputs and update the display on
     // the second core
-    multicore_launch_core1(core1_routine);
+    if (ENABLE_MULTICORE)
+    {
+        multicore_launch_core1(core1_routine);
+    }
 
     // Just to make sure everything is initialised
     sleep_ms(1000);
@@ -137,6 +141,11 @@ void loop()
 {
     uint32_t audio_input(0);
     uint32_t audio_output(0);
+
+    if (not ENABLE_MULTICORE)
+    {
+        read_inputs();
+    }
 
     // Perform audio processing only when required
     if (enable_audio_fx)
