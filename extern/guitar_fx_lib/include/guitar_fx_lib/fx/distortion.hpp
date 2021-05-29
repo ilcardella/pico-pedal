@@ -8,27 +8,6 @@ class Distortion : public Effect
     Distortion() = default;
     ~Distortion() = default;
 
-    // Override this setting values that do not depend on the input signal
-    // so that the process() method is as simple as possible
-    bool set_gain(const float &value) override
-    {
-        float threshold_min = 0.02f; // TODO this needs to be verified
-
-        if (value < 0.0f or value > 1.0f)
-        {
-            return false;
-        }
-
-        // Higher values should reduce the threshold window and viceversa
-        gain = 1.0f - value;
-
-        float threshold =
-            std::max<float>(threshold_min, (signal_max - threshold_min) * gain);
-        upper_bound = signal_mid + threshold;
-        lower_bound = signal_mid - threshold;
-        return true;
-    }
-
     std::string get_name() override
     {
         return "Distortion";
@@ -40,6 +19,18 @@ class Distortion : public Effect
         // The effect clamp the signal between upper and lower limits
         output = std::min<float>(std::max<float>(input, lower_bound), upper_bound);
         return true;
+    }
+
+    void on_gain_update(const float &new_gain) override
+    {
+        // TODO this needs to be verified
+        float threshold_min = 0.02f;
+
+        // Higher values should reduce the threshold window and viceversa
+        float threshold = std::max<float>(threshold_min, (signal_max - threshold_min) *
+                                                             (1.0f - new_gain));
+        upper_bound = signal_mid + threshold;
+        lower_bound = signal_mid - threshold;
     }
 
   private:
