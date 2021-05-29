@@ -18,8 +18,9 @@ TEST_F(TestFxManager, testInitialisation)
     FxManager fx(0, 1);
     auto names = fx.get_all_effects_names();
     ASSERT_EQ(names.size(), 2);
-    ASSERT_EQ(names[0], "Clean");
-    ASSERT_EQ(names[1], "Distortion");
+    // ASSERT_EQ(names[0], "Clean");
+    ASSERT_EQ(names[0], "Distortion");
+    ASSERT_EQ(names[1], "Echo");
 }
 
 TEST_F(TestFxManager, testCycleThroughNextEffects)

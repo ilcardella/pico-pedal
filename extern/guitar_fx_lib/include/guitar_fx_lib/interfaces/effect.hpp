@@ -31,11 +31,17 @@ class Effect
 
         gain = value;
 
+        on_gain_update(gain);
+
         return true;
     }
 
   protected:
     virtual bool apply_fx(const float &input, float &output) = 0;
+
+    virtual void on_gain_update(const float &new_gain)
+    {
+    }
 
     // Effect gain in percentage [0-100]
     float gain = 0.0f;

@@ -29,16 +29,17 @@ class Distortion : public Effect
         return true;
     }
 
+    std::string get_name() override
+    {
+        return "Distortion";
+    }
+
+  protected:
     bool apply_fx(const float &input, float &output) override
     {
         // The effect clamp the signal between upper and lower limits
         output = std::min<float>(std::max<float>(input, lower_bound), upper_bound);
         return true;
-    }
-
-    std::string get_name() override
-    {
-        return "Distortion";
     }
 
   private:
