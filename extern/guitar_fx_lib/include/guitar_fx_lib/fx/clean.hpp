@@ -8,14 +8,15 @@ class Clean : public Effect
     Clean() = default;
     ~Clean() = default;
 
+    std::string get_name() override
+    {
+        return "Clean";
+    }
+
+  protected:
     bool apply_fx(const float &input, float &output) override
     {
         output = input;
         return true;
-    }
-
-    std::string get_name() override
-    {
-        return "Clean";
     }
 };

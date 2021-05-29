@@ -80,7 +80,7 @@ void read_inputs()
 
         // Update effect gain based on input potentiometer value
         float gain = gain_pot->get_percent_value();
-        fx->set_gain(gain);
+        fx->set_gain(1.0f);
         display->set_gain_percent(gain);
 
         // Enable the audio processing when the foot switch is on

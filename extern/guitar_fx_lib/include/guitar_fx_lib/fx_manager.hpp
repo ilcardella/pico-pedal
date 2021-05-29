@@ -8,6 +8,7 @@
 
 #include <guitar_fx_lib/fx/clean.hpp>
 #include <guitar_fx_lib/fx/distortion.hpp>
+#include <guitar_fx_lib/fx/echo.hpp>
 #include <guitar_fx_lib/interfaces/effect.hpp>
 
 class FxManager
@@ -16,8 +17,9 @@ class FxManager
     FxManager(const uint32_t &min, const uint32_t &max)
         : signal_min(min), signal_max(max), signal_middle((max - min) / 2)
     {
-        effects.push_back(std::make_unique<Clean>());
+        // effects.push_back(std::make_unique<Clean>());
         effects.push_back(std::make_unique<Distortion>());
+        effects.push_back(std::make_unique<Echo>());
         effects_it = effects.begin();
     }
 
