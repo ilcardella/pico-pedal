@@ -21,6 +21,7 @@ mark_as_advanced(
 )
 
 custom_add_gtest("test_fx_manager")
+custom_add_gtest("test_fx_factory")
 custom_add_gtest("test_effect_clean")
 custom_add_gtest("test_effect_distortion")
 custom_add_gtest("test_effect_echo")
