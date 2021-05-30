@@ -4,6 +4,13 @@
 
 class TestFxManager : public ::testing::Test
 {
+  protected:
+    void SetUp()
+    {
+        names = {"Distortion", "Echo", "Delay"};
+    }
+
+    std::vector<std::string> names;
 };
 
 TEST_F(TestFxManager, testInitialisation)
@@ -16,19 +23,12 @@ TEST_F(TestFxManager, testInitialisation)
     ASSERT_NO_THROW(FxManager fx4(-10, -1));
 
     FxManager fx(0, 1);
-    auto names = fx.get_all_effects_names();
-    ASSERT_EQ(names.size(), 3);
-    // ASSERT_EQ(names[0], "Clean");
-    ASSERT_EQ(names[0], "Distortion");
-    ASSERT_EQ(names[1], "Echo");
-    ASSERT_EQ(names[2], "Delay");
 }
 
 TEST_F(TestFxManager, testCycleThroughNextEffects)
 {
     FxManager fx(0, 4095);
     unsigned int index = 0;
-    auto names = fx.get_all_effects_names();
 
     ASSERT_EQ(fx.get_active_effect_name(), names[index % names.size()]);
 
@@ -45,7 +45,6 @@ TEST_F(TestFxManager, testCycleThroughPreviousEffects)
 {
     FxManager fx(0, 4095);
     unsigned int index = 0;
-    auto names = fx.get_all_effects_names();
 
     ASSERT_EQ(fx.get_active_effect_name(), names[index % names.size()]);
 
@@ -79,7 +78,6 @@ TEST_F(TestFxManager, testProcessSignal)
     for (uint32_t input = 0; input < 4096; ++input)
     {
         FxManager fx(0, 4095);
-        auto names = fx.get_all_effects_names();
 
         for (unsigned i = 0; i < names.size(); ++i)
         {
