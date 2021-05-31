@@ -10,19 +10,18 @@
 #include <guitar_fx_lib/fx/delay.hpp>
 #include <guitar_fx_lib/fx/distortion.hpp>
 #include <guitar_fx_lib/fx/echo.hpp>
+#include <guitar_fx_lib/fx_factory.hpp>
 #include <guitar_fx_lib/interfaces/effect.hpp>
 
 class FxManager
 {
   public:
     FxManager(const uint32_t &min, const uint32_t &max)
-        : signal_min(min), signal_max(max), signal_middle((max - min) / 2)
+        : signal_min(min), signal_max(max), signal_middle((max - min) / 2), factory()
     {
-        // effects.push_back(std::make_unique<Clean>());
-        effects.push_back(std::make_unique<Distortion>());
-        effects.push_back(std::make_unique<Echo>());
-        effects.push_back(std::make_unique<Delay>());
+        effects = {Effects::DISTORTION, Effects::ECHO, Effects::DELAY};
         effects_it = effects.begin();
+        active_fx = factory.make(*effects_it);
     }
 
     ~FxManager() = default;
@@ -34,7 +33,7 @@ class FxManager
         {
             return false;
         }
-        return (*effects_it)->set_gain(value);
+        return active_fx->set_gain(value);
     }
 
     // Select the next effect. Wrap around after the last effect to start from the
@@ -47,6 +46,8 @@ class FxManager
         {
             effects_it = effects.begin();
         }
+
+        active_fx = factory.make(*effects_it);
     }
 
     // Select the previous effect. Wrap around after the first effect to start from the
@@ -61,6 +62,8 @@ class FxManager
         {
             effects_it--;
         }
+
+        active_fx = factory.make(*effects_it);
     }
 
     // Process an input signal into the current selected effect
@@ -72,7 +75,7 @@ class FxManager
 
         normalised_input = normalise_input(input);
 
-        if ((*effects_it)->process(normalised_input, normalised_output))
+        if (active_fx->process(normalised_input, normalised_output))
         {
             output = convert_output(normalised_output);
             return true;
@@ -83,15 +86,7 @@ class FxManager
 
     std::string get_active_effect_name()
     {
-        return (*effects_it)->get_name();
-    }
-
-    std::vector<std::string> get_all_effects_names()
-    {
-        std::vector<std::string> names;
-        std::transform(effects.begin(), effects.end(), std::back_inserter(names),
-                       [](const auto &effect) { return effect->get_name(); });
-        return names;
+        return active_fx->get_name();
     }
 
   private:
@@ -113,6 +108,9 @@ class FxManager
     uint32_t signal_max;
     uint32_t signal_min;
     uint32_t signal_middle;
-    std::vector<EffectPtr> effects;
-    std::vector<EffectPtr>::iterator effects_it;
+
+    FxFactory factory;
+    std::vector<Effects> effects;
+    std::vector<Effects>::iterator effects_it;
+    EffectPtr active_fx = nullptr;
 };
