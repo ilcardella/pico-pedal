@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Support for MCP3002 ADC
   - Support for 2x6bit PWM output signal
   - I2C SSD1306 Display
+  - Notification LED
   - Distortion effect
   - Echo effect
   - Delay effect
+  - Reverb effect

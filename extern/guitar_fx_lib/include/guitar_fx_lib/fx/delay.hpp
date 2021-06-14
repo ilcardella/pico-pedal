@@ -8,11 +8,30 @@ class Delay : public Effect
 {
   public:
     Delay() = default;
+
+    Delay(const uint32_t &initial_depth) : depth(initial_depth)
+    {
+    }
+
     ~Delay() = default;
 
     std::string get_name() override
     {
         return "Delay";
+    }
+
+    bool set_depth(const float &value)
+    {
+        if (value >= DELAY_MAX or value < DELAY_MIN)
+        {
+            return false;
+        }
+
+        depth = value;
+        // TODO: confirm if it's necessary to reset the buffer
+        // buffer.fill(0.0f);
+        // counter = 0;
+        return true;
     }
 
   protected:

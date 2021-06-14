@@ -6,6 +6,7 @@
 #include <guitar_fx_lib/fx/delay.hpp>
 #include <guitar_fx_lib/fx/distortion.hpp>
 #include <guitar_fx_lib/fx/echo.hpp>
+#include <guitar_fx_lib/fx/reverb.hpp>
 #include <guitar_fx_lib/interfaces/effect.hpp>
 
 enum class Effects
@@ -13,7 +14,8 @@ enum class Effects
     CLEAN,
     DISTORTION,
     ECHO,
-    DELAY
+    DELAY,
+    REVERB
 };
 
 class FxFactory
@@ -38,6 +40,8 @@ class FxFactory
         case Effects::DELAY:
             return std::make_unique<Delay>();
             break;
+        case Effects::REVERB:
+            return std::make_unique<Reverb>();
 
         default:
             return nullptr;

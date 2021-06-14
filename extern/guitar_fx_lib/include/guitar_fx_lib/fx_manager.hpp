@@ -19,7 +19,8 @@ class FxManager
     FxManager(const uint32_t &min, const uint32_t &max)
         : signal_min(min), signal_max(max), signal_middle((max - min) / 2), factory()
     {
-        effects = {Effects::DISTORTION, Effects::ECHO, Effects::DELAY};
+        effects = {Effects::CLEAN, Effects::DISTORTION, Effects::ECHO, Effects::DELAY,
+                   Effects::REVERB};
         effects_it = effects.begin();
         active_fx = factory.make(*effects_it);
     }
