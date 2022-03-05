@@ -27,8 +27,8 @@ class Distortion : public Effect
         float threshold_min = 0.05f;
 
         // Higher values should reduce the threshold window and viceversa
-        float threshold =
-            std::max<float>(threshold_min, (signal_max - signal_min) * (1.0f - new_gain));
+        float threshold = std::max<float>(threshold_min, ((signal_max - signal_min) / 2) *
+                                                             (1.0f - new_gain));
         upper_bound = signal_mid + threshold;
         lower_bound = signal_mid - threshold;
     }
