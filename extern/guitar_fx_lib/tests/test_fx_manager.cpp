@@ -7,7 +7,7 @@ class TestFxManager : public ::testing::Test
   protected:
     void SetUp()
     {
-        names = {"Distortion", "Echo", "Delay"};
+        names = {"Clean", "Distortion", "Echo", "Delay", "Reverb"};
     }
 
     std::vector<std::string> names;

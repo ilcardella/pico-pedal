@@ -20,7 +20,7 @@ class Reverb : public Effect
   protected:
     void on_gain_update(const float &new_gain) override
     {
-        // TODO
+        // TODO change the depth of each delay
         // delay1.set_depth(something)
         // delay2.set_depth(something else)
         // delay3.set_depth(another value again)
