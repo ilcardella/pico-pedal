@@ -26,5 +26,6 @@ custom_add_gtest("test_effect_clean")
 custom_add_gtest("test_effect_distortion")
 custom_add_gtest("test_effect_echo")
 custom_add_gtest("test_effect_delay")
+custom_add_gtest("test_effect_reverb")
 
 add_custom_target(run_tests COMMAND ctest ARGS --output-on-failure --verbose)
