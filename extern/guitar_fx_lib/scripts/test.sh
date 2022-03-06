@@ -2,6 +2,10 @@
 
 set -euo pipefail
 
+if [[ -d build ]]; then
+    rm -rf build
+fi
+
 # Build the automated test suite
 mkdir -p build
 cd build
