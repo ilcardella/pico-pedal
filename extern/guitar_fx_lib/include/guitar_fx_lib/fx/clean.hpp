@@ -1,6 +1,6 @@
 #pragma once
 
-#include <guitar_fx_lib/interfaces/effect.hpp>
+#include <guitar_fx_lib/fx/effect.hpp>
 
 class Clean : public Effect
 {

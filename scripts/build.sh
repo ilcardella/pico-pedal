@@ -3,4 +3,4 @@
 mkdir -p build
 cd build
 cmake ..
-cmake --build . --config Release -- -j $(nproc)
+cmake --build . -j $(nproc) --config Release --

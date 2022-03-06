@@ -6,21 +6,30 @@
 #include <string>
 #include <vector>
 
-#include <guitar_fx_lib/fx/clean.hpp>
-#include <guitar_fx_lib/fx/delay.hpp>
-#include <guitar_fx_lib/fx/distortion.hpp>
-#include <guitar_fx_lib/fx/echo.hpp>
-#include <guitar_fx_lib/fx_factory.hpp>
-#include <guitar_fx_lib/interfaces/effect.hpp>
+#include <guitar_fx_lib/fx/effect.hpp>
+#include <guitar_fx_lib/fx/effects.hpp>
+#include <guitar_fx_lib/fx/fx_factory.hpp>
 
 class FxManager
 {
   public:
     FxManager(const uint32_t &min, const uint32_t &max)
-        : signal_min(min), signal_max(max), signal_middle((max - min) / 2), factory()
+        : FxManager(min, max,
+                    {Effects::CLEAN, Effects::DISTORTION, Effects::ECHO, Effects::DELAY,
+                     Effects::REVERB})
     {
-        effects = {Effects::CLEAN, Effects::DISTORTION, Effects::ECHO, Effects::DELAY,
-                   Effects::REVERB};
+    }
+
+    FxManager(const uint32_t &min, const uint32_t &max,
+              const std::vector<Effects> &effects_list)
+        : signal_min(min), signal_max(max), signal_middle((max - min) / 2), factory(),
+          effects(effects_list)
+    {
+        if (effects.empty())
+        {
+            // Ideally we would throw, but some platform don't support exceptions
+            effects.push_back(Effects::CLEAN);
+        }
         effects_it = effects.begin();
         active_fx = factory.make(*effects_it);
     }

@@ -6,4 +6,4 @@ set -euo pipefail
 mkdir -p build
 cd build
 cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr/local -DBUILD_TESTS=OFF ..
-cmake --build . --config Release --target install -- -j $(nproc)
+cmake --build . -j $(nproc) --config Release --target install --
