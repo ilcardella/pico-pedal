@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 
+#include <guitar_fx_lib/fx/effects.hpp>
 #include <guitar_fx_lib/fx_manager.hpp>
 
 class TestFxManager : public ::testing::Test
@@ -86,5 +87,19 @@ TEST_F(TestFxManager, testProcessSignal)
                 << "Effect " << names[i] << " failed with input " << input;
             ASSERT_NO_THROW(fx.next_effect());
         }
+    }
+}
+
+TEST_F(TestFxManager, testSignalInternalConversion)
+{
+    // Use only the CLEAN effect with all the possible inputs to verify that
+    // any internal signal manipulation does not alter the output
+    for (uint32_t input = 0; input < 4096; ++input)
+    {
+        FxManager fx(0, 4095, {Effects::CLEAN});
+
+        uint32_t output = 0;
+        ASSERT_TRUE(fx.process(input, output)) << "Failed with input " << input;
+        ASSERT_EQ(input, output) << "Failed with input " << input;
     }
 }

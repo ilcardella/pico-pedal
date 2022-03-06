@@ -7,7 +7,7 @@
 #include <guitar_fx_lib/fx/delay.hpp>
 #include <guitar_fx_lib/fx/distortion.hpp>
 #include <guitar_fx_lib/fx/echo.hpp>
-#include <guitar_fx_lib/fx_factory.hpp>
+#include <guitar_fx_lib/fx/fx_factory.hpp>
 
 class TestFxFactory
     : public ::testing::TestWithParam<std::tuple<Effects, std::shared_ptr<Effect>>>
