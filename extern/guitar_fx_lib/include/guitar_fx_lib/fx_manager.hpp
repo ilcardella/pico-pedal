@@ -22,8 +22,7 @@ class FxManager
 
     FxManager(const uint32_t &min, const uint32_t &max,
               const std::vector<Effects> &effects_list)
-        : signal_min(min), signal_max(max), signal_middle((max - min) / 2), factory(),
-          effects(effects_list)
+        : signal_min(min), signal_max(max), factory(), effects(effects_list)
     {
         if (effects.empty())
         {
@@ -83,11 +82,11 @@ class FxManager
         float normalised_output(0.0f);
         output = 0;
 
-        normalised_input = normalise_input(input);
+        normalised_input = normalise(input);
 
         if (active_fx->process(normalised_input, normalised_output))
         {
-            output = convert_output(normalised_output);
+            output = denormalise(normalised_output);
             return true;
         }
 
@@ -100,24 +99,38 @@ class FxManager
     }
 
   private:
-    float normalise_input(const uint32_t &input)
+    float normalise(const uint32_t &input)
     {
-        return (static_cast<float>(input) - signal_middle) / (signal_middle + 1.0f);
+        // Constraint the input before the conversion
+        uint32_t safe_input =
+            std::min<uint32_t>(std::max<uint32_t>(input, signal_min), signal_max);
+
+        return map(static_cast<float>(safe_input), static_cast<float>(signal_min),
+                   static_cast<float>(signal_max), norm_signal_min, norm_signal_max);
     }
 
-    uint32_t convert_output(const float &normalised_output)
+    uint32_t denormalise(const float &normalised_output)
     {
-        float output(0.0f);
-
         // Constraint the output before the conversion
-        output = std::min<float>(std::max<float>(normalised_output, -1.0f), 1.0f);
+        float safe_output = std::min<float>(
+            std::max<float>(normalised_output, norm_signal_min), norm_signal_max);
 
-        return output * ((signal_middle + 1) + signal_middle);
+        return static_cast<uint32_t>(map(safe_output, norm_signal_min, norm_signal_max,
+                                         static_cast<float>(signal_min),
+                                         static_cast<float>(signal_max)) +
+                                     0.5f); // add .5f to avoid rounding errors
     }
 
-    uint32_t signal_max;
-    uint32_t signal_min;
-    uint32_t signal_middle;
+    float map(const float &x, const float &in_min, const float &in_max,
+              const float &out_min, const float &out_max)
+    {
+        return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+    }
+
+    const uint32_t signal_max;
+    const uint32_t signal_min;
+    const float norm_signal_max = 1.0f;
+    const float norm_signal_min = -1.0f;
 
     FxFactory factory;
     std::vector<Effects> effects;
